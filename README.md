@@ -15,6 +15,10 @@ sauber schneidet **und** rillt.
 | **Deckel & Boden** | Boden + passender Deckel; der Deckel wird um Materialstärke + Spiel größer berechnet. |
 | **Pillow-Box** | Geschwungene Kissen-Schachtel mit gebogenen Falzlinien und Klebelasche. |
 | **Tuck-Top-Karton** | Klassische Faltschachtel (Reverse Tuck End) mit Klebe-, Steck- und Staublaschen. |
+| **Four-Corner-Schale** 🔓 | **Ohne Kleber.** Selbstverriegelnde Schale (Beers Tray): Eck-Gussets falten nach innen, die doppelte Längswand klemmt sie fest, Laschen rasten in Boden-Schlitze ein – der Verpackungs-Standard für klebefreie Trays. |
+
+> 🔓 = klebefrei – hält allein durch Falten/Stecken. Bei klebefreien Designs lohnt
+> sich ein Testschnitt: je nach Papierstärke ggf. die Schlitzbreite minimal anpassen.
 
 Alle Maße (Länge/Breite/Höhe, Laschen, Materialstärke …) sind einstellbar, mit
 Live-Vorschau und SVG-Download. Einheit wahlweise **mm oder Zoll**.

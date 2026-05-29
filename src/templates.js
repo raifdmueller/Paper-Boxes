@@ -181,6 +181,70 @@ function tuck(v) {
 }
 
 // ---------------------------------------------------------------------------
+// 5. Four-corner tray (Beers tray) — GLUE-FREE, self-locking
+// ---------------------------------------------------------------------------
+// The industry-standard glue-free tray. One flat blank, no corner cuts:
+//   - 4 walls fold up; the corner gussets collapse along a diagonal score and
+//     lie flat against the long walls (giving a double-thick corner).
+//   - The long walls have an INNER panel that folds back down inside, trapping
+//     the gussets.
+//   - Locking tabs on the inner panel push through slots in the base, so the
+//     tray snaps shut and holds without any glue.
+function fourCorner(v) {
+  const d = new Dieline();
+  const { length: L, width: W, height: H } = v;
+  const tl = clamp(H * 0.28, 6, 14);  // locking-tab length
+  const tw = clamp(L * 0.18, 8, 30);  // locking-tab width
+  const sl = clamp(H * 0.12, 2.5, 5); // slot distance from the wall fold
+
+  // Two locking tabs per long wall, at 30% and 70% of the length.
+  const c1 = L * 0.3, c2 = L * 0.7;
+  const t1a = c1 - tw / 2, t1b = c1 + tw / 2;
+  const t2a = c2 - tw / 2, t2b = c2 + tw / 2;
+  const H2 = 2 * H;
+
+  // Outer silhouette (single closed cut), clockwise from the top-left gusset.
+  d.cut()
+    .M(-H, -H).L(0, -H)                       // top-left gusset
+    .L(0, -H2)                                // up the inner-panel left edge
+    .L(t1a, -H2).L(t1a, -H2 - tl).L(t1b, -H2 - tl).L(t1b, -H2) // tab 1
+    .L(t2a, -H2).L(t2a, -H2 - tl).L(t2b, -H2 - tl).L(t2b, -H2) // tab 2
+    .L(L, -H2).L(L, -H)                       // down the inner-panel right edge
+    .L(L + H, -H)                             // top-right gusset
+    .L(L + H, W + H)                          // right wall + corner gussets
+    .L(L, W + H).L(L, W + H2)                 // bottom-right inner panel
+    .L(t2b, W + H2).L(t2b, W + H2 + tl).L(t2a, W + H2 + tl).L(t2a, W + H2)
+    .L(t1b, W + H2).L(t1b, W + H2 + tl).L(t1a, W + H2 + tl).L(t1a, W + H2)
+    .L(0, W + H2).L(0, W + H)                 // bottom-left inner panel
+    .L(-H, W + H)                             // bottom-left gusset
+    .Z();                                     // left wall + corner gussets
+
+  // Base creases / wall folds.
+  d.foldLine(0, 0, L, 0);
+  d.foldLine(L, 0, L, W);
+  d.foldLine(0, W, L, W);
+  d.foldLine(0, 0, 0, W);
+
+  // Inner-panel folds (the double wall folds back inside).
+  d.foldLine(0, -H, L, -H);
+  d.foldLine(0, W + H, L, W + H);
+
+  // Corner gussets: collapse diagonal + the two side creases, per corner.
+  d.foldLine(0, 0, -H, -H); d.foldLine(0, -H, 0, 0); d.foldLine(-H, 0, 0, 0);
+  d.foldLine(L, 0, L + H, -H); d.foldLine(L, -H, L, 0); d.foldLine(L + H, 0, L, 0);
+  d.foldLine(0, W, -H, W + H); d.foldLine(0, W + H, 0, W); d.foldLine(-H, W, 0, W);
+  d.foldLine(L, W, L + H, W + H); d.foldLine(L, W + H, L, W); d.foldLine(L + H, W, L, W);
+
+  // Locking slots in the base (cut), aligned with the tabs above/below.
+  d.cut().M(t1a, sl).L(t1b, sl);
+  d.cut().M(t2a, sl).L(t2b, sl);
+  d.cut().M(t1a, W - sl).L(t1b, W - sl);
+  d.cut().M(t2a, W - sl).L(t2b, W - sl);
+
+  return d;
+}
+
+// ---------------------------------------------------------------------------
 // Registry
 // ---------------------------------------------------------------------------
 // Parameter spec: { key, label, default, min, max, step }
@@ -245,6 +309,21 @@ export const TEMPLATES = [
       { key: 'tuck', label: 'Stecklasche', default: 22, min: 8, max: 60, step: 1 },
       { key: 'dust', label: 'Staubklappe', default: 18, min: 6, max: 60, step: 1 },
       { key: 'glue', label: 'Klebelasche', default: 12, min: 6, max: 30, step: 1 },
+    ],
+  },
+  {
+    id: 'fourcorner',
+    name: 'Four-Corner-Schale (ohne Kleber)',
+    description:
+      'Selbstverriegelnde Schale (Beers Tray) – der Verpackungs-Standard ohne ' +
+      'Kleber. Eck-Gussets falten nach innen, die doppelte Längswand klemmt ' +
+      'sie fest, und Laschen rasten in Schlitze im Boden ein.',
+    glueFree: true,
+    generate: fourCorner,
+    params: [
+      { key: 'length', label: 'Länge', default: 100, min: 40, max: 240, step: 1 },
+      { key: 'width', label: 'Breite', default: 70, min: 40, max: 240, step: 1 },
+      { key: 'height', label: 'Höhe', default: 30, min: 15, max: 80, step: 1 },
     ],
   },
 ];
