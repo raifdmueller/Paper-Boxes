@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paper Boxes – SVG-Generator für Faltschachteln (Cricut Maker)</title>
+  <meta name="description" content="Erzeuge parametrische SVG-Schnittvorlagen für Papier-Faltschachteln, optimiert für Cricut Maker." />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>📦 Paper Boxes</h1>
+    <p>SVG-Faltschachteln für deinen Cricut Maker – Schnitt- und Falzlinien getrennt.</p>
+  </header>
+
+  <main>
+    <aside id="controls">
+      <label class="field">
+        <span>Design</span>
+        <select id="template"></select>
+      </label>
+      <p id="template-desc" class="desc"></p>
+
+      <label class="field">
+        <span>Einheit</span>
+        <select id="unit">
+          <option value="mm">Millimeter (mm)</option>
+          <option value="in">Zoll (in)</option>
+        </select>
+      </label>
+
+      <div id="params"></div>
+
+      <button id="reset" type="button" class="secondary">Werte zurücksetzen</button>
+      <button id="download" type="button">⬇ SVG herunterladen</button>
+
+      <div id="info" class="info"></div>
+    </aside>
+
+    <section id="preview-wrap">
+      <div id="preview" aria-label="Vorschau der Schnittvorlage"></div>
+      <div class="legend">
+        <span><i class="swatch cut"></i> Schneiden (Cut)</span>
+        <span><i class="swatch score"></i> Falzen / Rillen (Score)</span>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <details>
+      <summary>So nutzt du die SVG im Cricut Design Space</summary>
+      <ol>
+        <li>SVG herunterladen und in Cricut Design Space <em>Hochladen</em>.</li>
+        <li>Die schwarze Ebene auf <strong>Schneiden</strong> stellen.</li>
+        <li>Die blaue (gestrichelte) Ebene auswählen und auf <strong>Falzen/Rillen (Score)</strong> stellen –
+            dafür brauchst du das Rillrad oder den Falzstift.</li>
+        <li>Beide Ebenen markieren und <strong>Anbringen (Attach)</strong>, damit die Falzlinien an Ort und Stelle bleiben.</li>
+        <li>Festeren Karton (z.&nbsp;B. 200–300&nbsp;g/m²) wählen und den Druck ggf. erhöhen.</li>
+      </ol>
+      <p>Die Maße sind in echten Einheiten (mm bzw. Zoll) hinterlegt, der Cricut schneidet also 1:1.</p>
+    </details>
+  </footer>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
