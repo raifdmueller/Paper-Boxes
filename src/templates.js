@@ -181,88 +181,65 @@ function tuck(v) {
 }
 
 // ---------------------------------------------------------------------------
-// 5. Knickschachtel (origami pinch-corner tray) — GLUE-FREE
+// 5. Four-corner tray (Beers tray) — GLUE-FREE, self-locking
 // ---------------------------------------------------------------------------
-// One flat sheet, no corner cuts. The four walls fold up; the corner squares
-// pinch shut along a diagonal score; a hem on the long walls folds back down
-// and clamps the pinched corners in place. Holds purely by folding — no glue,
-// no slots.
-function pinchTray(v) {
+// The industry-standard glue-free tray. One flat blank, no corner cuts:
+//   - 4 walls fold up; the corner gussets collapse along a diagonal score and
+//     lie flat against the long walls (giving a double-thick corner).
+//   - The long walls have an INNER panel that folds back down inside, trapping
+//     the gussets.
+//   - Locking tabs on the inner panel push through slots in the base, so the
+//     tray snaps shut and holds without any glue.
+function fourCorner(v) {
   const d = new Dieline();
   const { length: L, width: W, height: H } = v;
-  const hem = clamp(v.hem, 3, H - 1);
+  const tl = clamp(H * 0.28, 6, 14);  // locking-tab length
+  const tw = clamp(L * 0.18, 8, 30);  // locking-tab width
+  const sl = clamp(H * 0.12, 2.5, 5); // slot distance from the wall fold
 
-  // Outer silhouette (single cut). N/S walls carry a protruding hem.
+  // Two locking tabs per long wall, at 30% and 70% of the length.
+  const c1 = L * 0.3, c2 = L * 0.7;
+  const t1a = c1 - tw / 2, t1b = c1 + tw / 2;
+  const t2a = c2 - tw / 2, t2b = c2 + tw / 2;
+  const H2 = 2 * H;
+
+  // Outer silhouette (single closed cut), clockwise from the top-left gusset.
   d.cut()
-    .M(-H, -H)
-    .L(0, -H).L(0, -H - hem).L(L, -H - hem).L(L, -H)     // north hem
-    .L(L + H, -H)
-    .L(L + H, W + H)
-    .L(L, W + H).L(L, W + H + hem).L(0, W + H + hem).L(0, W + H) // south hem
-    .L(-H, W + H)
-    .Z();
+    .M(-H, -H).L(0, -H)                       // top-left gusset
+    .L(0, -H2)                                // up the inner-panel left edge
+    .L(t1a, -H2).L(t1a, -H2 - tl).L(t1b, -H2 - tl).L(t1b, -H2) // tab 1
+    .L(t2a, -H2).L(t2a, -H2 - tl).L(t2b, -H2 - tl).L(t2b, -H2) // tab 2
+    .L(L, -H2).L(L, -H)                       // down the inner-panel right edge
+    .L(L + H, -H)                             // top-right gusset
+    .L(L + H, W + H)                          // right wall + corner gussets
+    .L(L, W + H).L(L, W + H2)                 // bottom-right inner panel
+    .L(t2b, W + H2).L(t2b, W + H2 + tl).L(t2a, W + H2 + tl).L(t2a, W + H2)
+    .L(t1b, W + H2).L(t1b, W + H2 + tl).L(t1a, W + H2 + tl).L(t1a, W + H2)
+    .L(0, W + H2).L(0, W + H)                 // bottom-left inner panel
+    .L(-H, W + H)                             // bottom-left gusset
+    .Z();                                     // left wall + corner gussets
 
-  // Base creases (also the wall fold lines).
+  // Base creases / wall folds.
   d.foldLine(0, 0, L, 0);
   d.foldLine(L, 0, L, W);
   d.foldLine(0, W, L, W);
   d.foldLine(0, 0, 0, W);
 
-  // Corner diagonals (the pinch folds).
-  d.foldLine(0, 0, -H, -H);
-  d.foldLine(L, 0, L + H, -H);
-  d.foldLine(0, W, -H, W + H);
-  d.foldLine(L, W, L + H, W + H);
-
-  // Hem fold lines (fold back over the pinched corners).
+  // Inner-panel folds (the double wall folds back inside).
   d.foldLine(0, -H, L, -H);
   d.foldLine(0, W + H, L, W + H);
 
-  return d;
-}
+  // Corner gussets: collapse diagonal + the two side creases, per corner.
+  d.foldLine(0, 0, -H, -H); d.foldLine(0, -H, 0, 0); d.foldLine(-H, 0, 0, 0);
+  d.foldLine(L, 0, L + H, -H); d.foldLine(L, -H, L, 0); d.foldLine(L + H, 0, L, 0);
+  d.foldLine(0, W, -H, W + H); d.foldLine(0, W + H, 0, W); d.foldLine(-H, W, 0, W);
+  d.foldLine(L, W, L + H, W + H); d.foldLine(L, W + H, L, W); d.foldLine(L + H, W, L, W);
 
-// ---------------------------------------------------------------------------
-// 6. Steck-Schale (corner-tab tray) — GLUE-FREE
-// ---------------------------------------------------------------------------
-// Tray whose end walls carry tapered corner tabs. The tabs wrap around the
-// corner and tuck behind the side walls, holding the tray closed without glue.
-function lockTray(v) {
-  const d = new Dieline();
-  const { length: L, width: W, height: H } = v;
-  const ft = clamp(v.tab, 4, H); // corner-tab depth
-  const tp = clamp(ft * 0.3, 1, ft - 0.5); // corner taper
-
-  // Base creases.
-  d.foldLine(0, 0, L, 0);
-  d.foldLine(L, 0, L, W);
-  d.foldLine(0, W, L, W);
-  d.foldLine(0, 0, 0, W);
-
-  // Side walls (free top/bottom edges, outer edge).
-  d.cut().M(0, 0).L(-H, 0).L(-H, W).L(0, W);
-  d.cut().M(L, 0).L(L + H, 0).L(L + H, W).L(L, W);
-
-  // North wall + two wrap tabs (open polyline; the base edge stays a fold).
-  d.cut()
-    .M(0, 0)
-    .L(-ft, 0)                       // cut: frees tab from west wall
-    .L(-ft, -H + tp).L(-ft + tp, -H) // tapered left tab
-    .L(L + ft - tp, -H).L(L + ft, -H + tp) // top edge + tapered right tab
-    .L(L + ft, 0)
-    .L(L, 0);                        // cut: frees tab from east wall
-  d.foldLine(0, 0, 0, -H);           // left tab crease
-  d.foldLine(L, 0, L, -H);           // right tab crease
-
-  // South wall + two wrap tabs (mirrored).
-  d.cut()
-    .M(0, W)
-    .L(-ft, W)
-    .L(-ft, W + H - tp).L(-ft + tp, W + H)
-    .L(L + ft - tp, W + H).L(L + ft, W + H - tp)
-    .L(L + ft, W)
-    .L(L, W);
-  d.foldLine(0, W, 0, W + H);
-  d.foldLine(L, W, L, W + H);
+  // Locking slots in the base (cut), aligned with the tabs above/below.
+  d.cut().M(t1a, sl).L(t1b, sl);
+  d.cut().M(t2a, sl).L(t2b, sl);
+  d.cut().M(t1a, W - sl).L(t1b, W - sl);
+  d.cut().M(t2a, W - sl).L(t2b, W - sl);
 
   return d;
 }
@@ -335,35 +312,18 @@ export const TEMPLATES = [
     ],
   },
   {
-    id: 'pinch',
-    name: 'Knickschachtel (ohne Kleber)',
+    id: 'fourcorner',
+    name: 'Four-Corner-Schale (ohne Kleber)',
     description:
-      'Origami-Schale aus einem Stück – ganz ohne Kleber. Die Wände klappen ' +
-      'hoch, die Ecken knicken diagonal ein, der umgeschlagene Rand klemmt sie ' +
-      'fest. Nur Außenkontur schneiden, der Rest wird gefalzt.',
+      'Selbstverriegelnde Schale (Beers Tray) – der Verpackungs-Standard ohne ' +
+      'Kleber. Eck-Gussets falten nach innen, die doppelte Längswand klemmt ' +
+      'sie fest, und Laschen rasten in Schlitze im Boden ein.',
     glueFree: true,
-    generate: pinchTray,
+    generate: fourCorner,
     params: [
-      { key: 'length', label: 'Länge', default: 90, min: 30, max: 240, step: 1 },
-      { key: 'width', label: 'Breite', default: 70, min: 30, max: 240, step: 1 },
-      { key: 'height', label: 'Höhe', default: 35, min: 12, max: 100, step: 1 },
-      { key: 'hem', label: 'Klemmrand', default: 15, min: 5, max: 60, step: 1 },
-    ],
-  },
-  {
-    id: 'locktray',
-    name: 'Steck-Schale (ohne Kleber)',
-    description:
-      'Schale mit Ecklaschen, die um die Ecke greifen und sich hinter die ' +
-      'Seitenwände stecken – hält ohne Kleber. Für festen Karton; bei Bedarf ' +
-      'die Laschentiefe an dein Papier anpassen.',
-    glueFree: true,
-    generate: lockTray,
-    params: [
-      { key: 'length', label: 'Länge', default: 90, min: 30, max: 240, step: 1 },
-      { key: 'width', label: 'Breite', default: 70, min: 30, max: 240, step: 1 },
-      { key: 'height', label: 'Höhe', default: 40, min: 12, max: 120, step: 1 },
-      { key: 'tab', label: 'Laschentiefe', default: 25, min: 6, max: 80, step: 1 },
+      { key: 'length', label: 'Länge', default: 100, min: 40, max: 240, step: 1 },
+      { key: 'width', label: 'Breite', default: 70, min: 40, max: 240, step: 1 },
+      { key: 'height', label: 'Höhe', default: 30, min: 15, max: 80, step: 1 },
     ],
   },
 ];
