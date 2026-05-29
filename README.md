@@ -15,6 +15,11 @@ sauber schneidet **und** rillt.
 | **Deckel & Boden** | Boden + passender Deckel; der Deckel wird um Materialstärke + Spiel größer berechnet. |
 | **Pillow-Box** | Geschwungene Kissen-Schachtel mit gebogenen Falzlinien und Klebelasche. |
 | **Tuck-Top-Karton** | Klassische Faltschachtel (Reverse Tuck End) mit Klebe-, Steck- und Staublaschen. |
+| **Knickschachtel** 🔓 | **Ohne Kleber.** Origami-Schale aus einem Stück: Wände hoch, Ecken einknicken, umgeschlagener Rand klemmt sie fest. |
+| **Steck-Schale** 🔓 | **Ohne Kleber.** Ecklaschen greifen um die Ecke und stecken hinter die Seitenwände. |
+
+> 🔓 = klebefrei – hält allein durch Falten/Stecken. Bei klebefreien „Steck"-Designs
+> lohnt sich ein Testschnitt: je nach Papierstärke ggf. Laschentiefe/Klemmrand anpassen.
 
 Alle Maße (Länge/Breite/Höhe, Laschen, Materialstärke …) sind einstellbar, mit
 Live-Vorschau und SVG-Download. Einheit wahlweise **mm oder Zoll**.

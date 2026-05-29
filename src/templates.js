@@ -181,6 +181,93 @@ function tuck(v) {
 }
 
 // ---------------------------------------------------------------------------
+// 5. Knickschachtel (origami pinch-corner tray) — GLUE-FREE
+// ---------------------------------------------------------------------------
+// One flat sheet, no corner cuts. The four walls fold up; the corner squares
+// pinch shut along a diagonal score; a hem on the long walls folds back down
+// and clamps the pinched corners in place. Holds purely by folding — no glue,
+// no slots.
+function pinchTray(v) {
+  const d = new Dieline();
+  const { length: L, width: W, height: H } = v;
+  const hem = clamp(v.hem, 3, H - 1);
+
+  // Outer silhouette (single cut). N/S walls carry a protruding hem.
+  d.cut()
+    .M(-H, -H)
+    .L(0, -H).L(0, -H - hem).L(L, -H - hem).L(L, -H)     // north hem
+    .L(L + H, -H)
+    .L(L + H, W + H)
+    .L(L, W + H).L(L, W + H + hem).L(0, W + H + hem).L(0, W + H) // south hem
+    .L(-H, W + H)
+    .Z();
+
+  // Base creases (also the wall fold lines).
+  d.foldLine(0, 0, L, 0);
+  d.foldLine(L, 0, L, W);
+  d.foldLine(0, W, L, W);
+  d.foldLine(0, 0, 0, W);
+
+  // Corner diagonals (the pinch folds).
+  d.foldLine(0, 0, -H, -H);
+  d.foldLine(L, 0, L + H, -H);
+  d.foldLine(0, W, -H, W + H);
+  d.foldLine(L, W, L + H, W + H);
+
+  // Hem fold lines (fold back over the pinched corners).
+  d.foldLine(0, -H, L, -H);
+  d.foldLine(0, W + H, L, W + H);
+
+  return d;
+}
+
+// ---------------------------------------------------------------------------
+// 6. Steck-Schale (corner-tab tray) — GLUE-FREE
+// ---------------------------------------------------------------------------
+// Tray whose end walls carry tapered corner tabs. The tabs wrap around the
+// corner and tuck behind the side walls, holding the tray closed without glue.
+function lockTray(v) {
+  const d = new Dieline();
+  const { length: L, width: W, height: H } = v;
+  const ft = clamp(v.tab, 4, H); // corner-tab depth
+  const tp = clamp(ft * 0.3, 1, ft - 0.5); // corner taper
+
+  // Base creases.
+  d.foldLine(0, 0, L, 0);
+  d.foldLine(L, 0, L, W);
+  d.foldLine(0, W, L, W);
+  d.foldLine(0, 0, 0, W);
+
+  // Side walls (free top/bottom edges, outer edge).
+  d.cut().M(0, 0).L(-H, 0).L(-H, W).L(0, W);
+  d.cut().M(L, 0).L(L + H, 0).L(L + H, W).L(L, W);
+
+  // North wall + two wrap tabs (open polyline; the base edge stays a fold).
+  d.cut()
+    .M(0, 0)
+    .L(-ft, 0)                       // cut: frees tab from west wall
+    .L(-ft, -H + tp).L(-ft + tp, -H) // tapered left tab
+    .L(L + ft - tp, -H).L(L + ft, -H + tp) // top edge + tapered right tab
+    .L(L + ft, 0)
+    .L(L, 0);                        // cut: frees tab from east wall
+  d.foldLine(0, 0, 0, -H);           // left tab crease
+  d.foldLine(L, 0, L, -H);           // right tab crease
+
+  // South wall + two wrap tabs (mirrored).
+  d.cut()
+    .M(0, W)
+    .L(-ft, W)
+    .L(-ft, W + H - tp).L(-ft + tp, W + H)
+    .L(L + ft - tp, W + H).L(L + ft, W + H - tp)
+    .L(L + ft, W)
+    .L(L, W);
+  d.foldLine(0, W, 0, W + H);
+  d.foldLine(L, W, L, W + H);
+
+  return d;
+}
+
+// ---------------------------------------------------------------------------
 // Registry
 // ---------------------------------------------------------------------------
 // Parameter spec: { key, label, default, min, max, step }
@@ -245,6 +332,38 @@ export const TEMPLATES = [
       { key: 'tuck', label: 'Stecklasche', default: 22, min: 8, max: 60, step: 1 },
       { key: 'dust', label: 'Staubklappe', default: 18, min: 6, max: 60, step: 1 },
       { key: 'glue', label: 'Klebelasche', default: 12, min: 6, max: 30, step: 1 },
+    ],
+  },
+  {
+    id: 'pinch',
+    name: 'Knickschachtel (ohne Kleber)',
+    description:
+      'Origami-Schale aus einem Stück – ganz ohne Kleber. Die Wände klappen ' +
+      'hoch, die Ecken knicken diagonal ein, der umgeschlagene Rand klemmt sie ' +
+      'fest. Nur Außenkontur schneiden, der Rest wird gefalzt.',
+    glueFree: true,
+    generate: pinchTray,
+    params: [
+      { key: 'length', label: 'Länge', default: 90, min: 30, max: 240, step: 1 },
+      { key: 'width', label: 'Breite', default: 70, min: 30, max: 240, step: 1 },
+      { key: 'height', label: 'Höhe', default: 35, min: 12, max: 100, step: 1 },
+      { key: 'hem', label: 'Klemmrand', default: 15, min: 5, max: 60, step: 1 },
+    ],
+  },
+  {
+    id: 'locktray',
+    name: 'Steck-Schale (ohne Kleber)',
+    description:
+      'Schale mit Ecklaschen, die um die Ecke greifen und sich hinter die ' +
+      'Seitenwände stecken – hält ohne Kleber. Für festen Karton; bei Bedarf ' +
+      'die Laschentiefe an dein Papier anpassen.',
+    glueFree: true,
+    generate: lockTray,
+    params: [
+      { key: 'length', label: 'Länge', default: 90, min: 30, max: 240, step: 1 },
+      { key: 'width', label: 'Breite', default: 70, min: 30, max: 240, step: 1 },
+      { key: 'height', label: 'Höhe', default: 40, min: 12, max: 120, step: 1 },
+      { key: 'tab', label: 'Laschentiefe', default: 25, min: 6, max: 80, step: 1 },
     ],
   },
 ];
